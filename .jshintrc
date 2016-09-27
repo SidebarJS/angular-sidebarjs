@@ -1,0 +1,18 @@
+{
+  "esnext": true,
+  "globalstrict": true,
+  "globals": {
+    "angular"   : false,
+    "module"    : false,
+    "require"   : false
+  },
+  "undef": true,
+  "unused": true,
+  "node": true,
+  "browser": true,
+  "-W003": true,
+  "-W014": true,
+  "-W030": true,
+  "-W040": true,
+  "-W093": true
+}
