@@ -36,7 +36,6 @@
 
   /* @ngInject */
   function SidebarJS() {
-    let sidebarjs = window.SidebarJS || require('sidebarjs');
     let instance;
 
     return Object.create({init}, {
@@ -46,7 +45,9 @@
     });
 
     function init() {
-      instance = new sidebarjs();
+      let SIDEBAR_JS = window.SidebarJS || require('sidebarjs');
+      instance = new SIDEBAR_JS();
+      SIDEBAR_JS = null;
     }
 
     function open() {

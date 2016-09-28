@@ -172,7 +172,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 
   function SidebarJS() {
-    var sidebarjs = window.SidebarJS || require('sidebarjs');
     var instance = void 0;
 
     return Object.create({ init: init }, {
@@ -182,7 +181,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     });
 
     function init() {
-      instance = new sidebarjs();
+      var SIDEBAR_JS = window.SidebarJS || require('sidebarjs');
+      instance = new SIDEBAR_JS();
+      SIDEBAR_JS = null;
     }
 
     function open() {
