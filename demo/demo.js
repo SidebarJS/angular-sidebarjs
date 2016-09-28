@@ -2,18 +2,52 @@
 
 angular
 .module('Demo', [
+  'ui.router',
   'angular-sidebarjs'
 ])
+.config(function($stateProvider, $urlRouterProvider) {
+  $urlRouterProvider.otherwise('/home');
+  $stateProvider
+    .state('home', {
+      url: '/home',
+      template: '<home></home>'
+    })
+    .state('about', {
+      url: '/about',
+      template: '<about></about>'
+    });
+})
 .component('app', {
-  controller: function() {
-    this.showElem = () => this.elemIsVisible = !this.elemIsVisible;
+  controller: function(SidebarJS) {
+    this.clickLink = function() {
+      SidebarJS.close();
+    }
   },
   template: `
     <button sidebarjs-toggle>toggle sidebarjs</button>
     <sidebarjs>
-      <div ng-click="$ctrl.showElem()">Toggle my element</div>
+    <button sidebarjs-toggle>toggle again</button>
+      <nav>
+        <a ui-sref="home" ng-click="$ctrl.clickLink()">Home</a>
+        <a ui-sref="about" ng-click="$ctrl.clickLink()">About</a>
+      </nav>
     </sidebarjs>
-
-    <div ng-if="$ctrl.elemIsVisible">My Element</div>
+    <div ui-view></div>
+  `
+})
+.component('home', {
+  controller: function() {
+    this.title = 'Home Page';
+  },
+  template: `
+    <h1>{{$ctrl.title}}</h1>
+  `
+})
+.component('about', {
+  controller: function() {
+    this.title = 'About Page';
+  },
+  template: `
+    <h1>{{$ctrl.title}}</h1>
   `
 });

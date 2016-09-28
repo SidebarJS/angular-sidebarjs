@@ -118,44 +118,87 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 },{}],2:[function(require,module,exports){
 'use strict';
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 (function () {
 
   /* @ngInject */
-  SidebarCtrl.$inject = ["$transclude", "$element"];
-  function SidebarCtrl($transclude, $element) {
-    var transcludedContent = void 0;
-    var transcludedScope = void 0;
-    this.$onInit = onInit;
-    this.$postLink = postLink;
-    this.$onDestroy = onDestroy;
+  var SidebarCtrl = function () {
+    /* @ngInject */
+    SidebarCtrl.$inject = ["$transclude", "$element", "SidebarJS"];
+    function SidebarCtrl($transclude, $element, SidebarJS) {
+      _classCallCheck(this, SidebarCtrl);
 
-    function onInit() {
-      $element[0].setAttribute('sidebarjs', '');
-      var SidebarJS = require('SidebarJS');
-      new SidebarJS();
+      this.elem = $element[0];
+      this.transclude = $transclude;
+      this.SidebarJS = SidebarJS;
+      this.transcludedContent;
+      this.transcludedScope;
     }
 
-    function postLink() {
-      $transclude(function (clone, scope) {
-        for (var i = 0; i < clone.length; i++) {
-          $element[0].children[0].appendChild(clone[i]);
-        }
-        transcludedContent = clone;
-        transcludedScope = scope;
-        console.log(clone);
-      });
+    _createClass(SidebarCtrl, [{
+      key: '$onInit',
+      value: function $onInit() {
+        this.elem.setAttribute('sidebarjs', '');
+        this.SidebarJS.init();
+      }
+    }, {
+      key: '$postLink',
+      value: function $postLink() {
+        var _this = this;
+
+        this.transclude(function (clone, scope) {
+          for (var i = 0; i < clone.length; i++) {
+            _this.elem.children[0].appendChild(clone[i]);
+          }
+          _this.transcludedContent = clone;
+          _this.transcludedScope = scope;
+        });
+      }
+    }, {
+      key: '$onDestroy',
+      value: function $onDestroy() {
+        this.transcludedScope.$destroy();
+        this.transcludedScope = this.transcludedContent = null;
+      }
+    }]);
+
+    return SidebarCtrl;
+  }();
+
+  /* @ngInject */
+
+
+  function SidebarJS() {
+    var sidebarjs = window.SidebarJS || require('sidebarjs');
+    var instance = void 0;
+
+    return Object.create({ init: init }, {
+      open: { writable: false, configurable: false, enumerable: false, value: open },
+      close: { writable: false, configurable: false, enumerable: false, value: close },
+      toggle: { writable: false, configurable: false, enumerable: false, value: toggle }
+    });
+
+    function init() {
+      instance = new sidebarjs();
     }
 
-    function onDestroy() {
-      transcludedScope.$destroy();
-      transcludedScope = null;
+    function open() {
+      instance.open();
+    }
+
+    function close() {
+      instance.close();
+    }
+
+    function toggle() {
+      instance.toggle();
     }
   }
 
-  angular.module('angular-sidebarjs', []).component('sidebarjs', {
-    transclude: true,
-    controller: SidebarCtrl
-  });
+  angular.module('angular-sidebarjs', []).component('sidebarjs', { transclude: true, controller: SidebarCtrl }).factory('SidebarJS', SidebarJS);
 })();
 
-},{"SidebarJS":1}]},{},[2]);
+},{"sidebarjs":1}]},{},[2]);

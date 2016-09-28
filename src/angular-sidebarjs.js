@@ -3,40 +3,67 @@
 (function() {
 
   /* @ngInject */
-  function SidebarCtrl($transclude, $element) {
-    let transcludedContent;
-    let transcludedScope;
-    this.$onInit = onInit;
-    this.$postLink = postLink;
-    this.$onDestroy = onDestroy;
-
-    function onInit() {
-      $element[0].setAttribute('sidebarjs', '');
-      let SidebarJS = require('SidebarJS');
-      new SidebarJS();
+  class SidebarCtrl {
+    /* @ngInject */
+    constructor($transclude, $element, SidebarJS) {
+      this.elem = $element[0];
+      this.transclude = $transclude;
+      this.SidebarJS = SidebarJS;
+      this.transcludedContent;
+      this.transcludedScope;
     }
 
-    function postLink() {
-      $transclude((clone, scope) => {
+    $onInit() {
+      this.elem.setAttribute('sidebarjs', '');
+      this.SidebarJS.init();
+    }
+
+    $postLink() {
+      this.transclude((clone, scope) => {
         for(let i = 0; i < clone.length; i++) {
-          $element[0].children[0].appendChild(clone[i]);
+          this.elem.children[0].appendChild(clone[i]);
         }
-        transcludedContent = clone;
-        transcludedScope = scope;
-        console.log(clone);
+        this.transcludedContent = clone;
+        this.transcludedScope = scope;
       });
     }
 
-    function onDestroy() {
-      transcludedScope.$destroy();
-      transcludedScope = null;
+    $onDestroy() {
+      this.transcludedScope.$destroy();
+      this.transcludedScope = this.transcludedContent = null;
+    }
+  }
+
+  /* @ngInject */
+  function SidebarJS() {
+    let sidebarjs = window.SidebarJS || require('sidebarjs');
+    let instance;
+
+    return Object.create({init}, {
+      open: {writable: false, configurable: false, enumerable: false, value: open},
+      close: {writable: false, configurable: false, enumerable: false, value: close},
+      toggle: {writable: false, configurable: false, enumerable: false, value: toggle}
+    });
+
+    function init() {
+      instance = new sidebarjs();
+    }
+
+    function open() {
+      instance.open();
+    }
+
+    function close() {
+      instance.close();
+    }
+
+    function toggle() {
+      instance.toggle();
     }
   }
 
   angular
     .module('angular-sidebarjs', [])
-    .component('sidebarjs', {
-      transclude: true,
-      controller: SidebarCtrl
-    });
+    .component('sidebarjs', {transclude: true,controller: SidebarCtrl})
+    .factory('SidebarJS', SidebarJS);
 })();
