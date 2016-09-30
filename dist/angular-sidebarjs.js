@@ -141,8 +141,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 (function () {
-
   /* @ngInject */
+  sidebarjsDirective.$inject = ["action"];
   var SidebarCtrl = function () {
     /* @ngInject */
     SidebarCtrl.$inject = ["$transclude", "$element", "SidebarJS"];
@@ -210,6 +210,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     });
   }
 
+  /* @ngInject */
   function sidebarjsDirective(action) {
     return {
       /* @ngInject */

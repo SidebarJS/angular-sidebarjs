@@ -1,0 +1,28 @@
+@import url('https://rawgit.com/SidebarJS/sidebarjs/master/demo/demo.css');
+@import url('https://rawgit.com/SidebarJS/sidebarjs/master/dist/sidebarjs.min.css');
+
+[sidebarjs] h3 {
+  line-height: 120%;
+}
+
+html, body, app {
+  height: 100%;
+}
+body {
+  min-height: auto;
+}
+app {
+  display: block;
+}
+main > div {
+  position: fixed;
+  z-index: 9999;
+  left: 16px;
+  bottom: 16px;
+  right: 16px;
+  text-align: center;
+  padding: 12px 15px;
+  border-radius: 2px;
+  background: #eeeeee;
+  box-shadow: 0 3px 6px rgba(0,0,0, .16), 0 3px 6px rgba(0,0,0, .23);
+}

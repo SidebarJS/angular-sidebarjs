@@ -1,55 +1,39 @@
 'use strict';
 
-angular
-.module('Demo', [
-  'ui.router',
-  'angular-sidebarjs'
-])
-.config(function($stateProvider, $urlRouterProvider) {
-  $urlRouterProvider.otherwise('/home');
-  $stateProvider
-    .state('home', {
-      url: '/home',
-      template: '<home></home>'
-    })
-    .state('about', {
-      url: '/about',
-      template: '<about></about>'
-    });
-})
-.component('app', {
+const App = {
   controller: function(SidebarJS) {
-    this.clickLink = function() {
-      SidebarJS.close();
+    this.toggleSidebarJS = function() {
+      SidebarJS.toggle();
     };
   },
+  controllerAs: 'app',
   template: `
-    <button sidebarjs-toggle>toggle sidebarjs</button>
+    <header>
+      <div class="icon hamburger-icon" sidebarjs-toggle></div>
+      <h1>Angular SidebarJS</h1>
+    </header>
+
     <sidebarjs>
-      <button sidebarjs-toggle>toggle again</button>
+      <h3>Angular SidebarJS</h3>
       <nav>
-        <a ui-sref="home" ng-click="$ctrl.clickLink()">Home</a>
-        <a ui-sref="about" ng-click="$ctrl.clickLink()">About</a>
+        <div>
+          <a href="https://github.com/SidebarJS/sidebarjs"><div class="img github"></div>Github</a>
+          <a href="https://www.npmjs.com/package/sidebarjs"><div class="img npm"></div>npm</a>
+          <a href="https://github.com/lorenzodianni"><div class="img author"></div>Author</a>
+        </div>
+        <div>
+          <a href="https://github.com/SidebarJS/sidebarjs/wiki/Setup"><div class="img wiki"></div>Wiki</a>
+          <a href="https://github.com/SidebarJS/sidebarjs/issues"><div class="img bugs"></div>Bugs</a>
+        </div>
       </nav>
     </sidebarjs>
-    <div ui-view></div>
+
+    <main>
+      <div ng-click="app.toggleSidebarJS()">Toggle via javascript</div>
+    </main>
   `
-})
-.component('home', {
-  controller: function() {
-    this.title = 'Home Page';
-  },
-  template: `
-    <h1>{{$ctrl.title}}</h1>
-    <button sidebarjs-toggle>toggle view</button>
-  `
-})
-.component('about', {
-  controller: function() {
-    this.title = 'About Page';
-  },
-  template: `
-    <h1>{{$ctrl.title}}</h1>
-    <button sidebarjs-toggle>toggle view</button>
-  `
-});
+};
+
+angular
+.module('Demo', ['angular-sidebarjs'])
+.component('app', App);

@@ -1,7 +1,6 @@
 'use strict';
 
 (function() {
-
   /* @ngInject */
   class SidebarCtrl {
     /* @ngInject */
@@ -45,6 +44,7 @@
     });
   }
 
+  /* @ngInject */
   function sidebarjsDirective(action) {
     return {
       /* @ngInject */
