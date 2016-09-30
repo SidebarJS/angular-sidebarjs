@@ -17,13 +17,13 @@ const App = {
       <h3>Angular SidebarJS</h3>
       <nav>
         <div>
-          <a href="https://github.com/SidebarJS/sidebarjs"><div class="img github"></div>Github</a>
-          <a href="https://www.npmjs.com/package/sidebarjs"><div class="img npm"></div>npm</a>
-          <a href="https://github.com/lorenzodianni"><div class="img author"></div>Author</a>
+          <a sidebarjs-toggle href="https://github.com/SidebarJS/angular-sidebarjs" target="_blank"><div class="img github"></div>Github</a>
+          <a sidebarjs-toggle href="https://www.npmjs.com/package/angular-sidebarjs" target="_blank"><div class="img npm"></div>npm</a>
+          <a sidebarjs-toggle href="https://github.com/lorenzodianni" target="_blank"><div class="img author"></div>Author</a>
         </div>
         <div>
-          <a href="https://github.com/SidebarJS/sidebarjs/wiki/Setup"><div class="img wiki"></div>Wiki</a>
-          <a href="https://github.com/SidebarJS/sidebarjs/issues"><div class="img bugs"></div>Bugs</a>
+          <a sidebarjs-toggle href="https://github.com/SidebarJS/angular-sidebarjs/blob/master/README.md" target="_blank"><div class="img wiki"></div>Wiki</a>
+          <a sidebarjs-toggle href="https://github.com/SidebarJS/angular-sidebarjs/issues" target="_blank"><div class="img bugs"></div>Bugs</a>
         </div>
       </nav>
     </sidebarjs>

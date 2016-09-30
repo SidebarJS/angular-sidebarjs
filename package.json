@@ -1,7 +1,7 @@
 {
   "name": "angular-sidebarjs",
   "version": "0.1.0",
-  "description": "",
+  "description": "Create mobile sidebar/sidenav experiance in angularjs",
   "main": "index.js",
   "repository": {
     "type": "git",

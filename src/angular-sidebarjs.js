@@ -2,7 +2,7 @@
 
 (function() {
   /* @ngInject */
-  class SidebarCtrl {
+  class SidebarJSCtrl {
     /* @ngInject */
     constructor($transclude, $element, SidebarJS) {
       this.elem = $element[0];
@@ -31,7 +31,7 @@
   }
 
   /* @ngInject */
-  function SidebarJS() {
+  function SidebarJSFactory() {
     let SidebarJS = window.SidebarJS || require('sidebarjs');
     let instance;
     return Object.create({
@@ -45,7 +45,7 @@
   }
 
   /* @ngInject */
-  function sidebarjsDirective(action) {
+  function SidebarJSDirective(action) {
     return {
       /* @ngInject */
       controller: function ctrl(SidebarJS) {
@@ -62,9 +62,9 @@
 
   angular
     .module('angular-sidebarjs', [])
-    .factory('SidebarJS', SidebarJS)
-    .component('sidebarjs', {transclude: true,controller: SidebarCtrl})
-    .directive('sidebarjsOpen', sidebarjsDirective.bind(null, 'open'))
-    .directive('sidebarjsClose', sidebarjsDirective.bind(null, 'close'))
-    .directive('sidebarjsToggle', sidebarjsDirective.bind(null, 'toggle'));
+    .factory('SidebarJS', SidebarJSFactory)
+    .component('sidebarjs', {transclude: true,controller: SidebarJSCtrl})
+    .directive('sidebarjsOpen', SidebarJSDirective.bind(null, 'open'))
+    .directive('sidebarjsClose', SidebarJSDirective.bind(null, 'close'))
+    .directive('sidebarjsToggle', SidebarJSDirective.bind(null, 'toggle'));
 })();

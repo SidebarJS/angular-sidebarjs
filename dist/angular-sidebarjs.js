@@ -95,11 +95,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this.background.removeAttribute('style');
       }
     }], [{
-      key: 'init',
-      value: function init() {
-        new SidebarJS();
-      }
-    }, {
       key: 'create',
       value: function create(element) {
         var el = document.createElement('div');
@@ -125,15 +120,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: 'version',
       get: function get() {
-        return '1.5.0';
+        return '1.6.1';
       }
     }]);
 
     return SidebarJS;
   }();
 }());
-
 },{}],2:[function(require,module,exports){
+module.exports = require('./dist/sidebarjs.js');
+
+},{"./dist/sidebarjs.js":1}],3:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -142,12 +139,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 (function () {
   /* @ngInject */
-  sidebarjsDirective.$inject = ["action"];
-  var SidebarCtrl = function () {
+  SidebarJSDirective.$inject = ["action"];
+  var SidebarJSCtrl = function () {
     /* @ngInject */
-    SidebarCtrl.$inject = ["$transclude", "$element", "SidebarJS"];
-    function SidebarCtrl($transclude, $element, SidebarJS) {
-      _classCallCheck(this, SidebarCtrl);
+    SidebarJSCtrl.$inject = ["$transclude", "$element", "SidebarJS"];
+    function SidebarJSCtrl($transclude, $element, SidebarJS) {
+      _classCallCheck(this, SidebarJSCtrl);
 
       this.elem = $element[0];
       this.transclude = $transclude;
@@ -156,7 +153,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       this.transcludedScope;
     }
 
-    _createClass(SidebarCtrl, [{
+    _createClass(SidebarJSCtrl, [{
       key: '$onInit',
       value: function $onInit() {
         this.elem.setAttribute('sidebarjs', '');
@@ -183,13 +180,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }
     }]);
 
-    return SidebarCtrl;
+    return SidebarJSCtrl;
   }();
 
   /* @ngInject */
 
 
-  function SidebarJS() {
+  function SidebarJSFactory() {
     var SidebarJS = window.SidebarJS || require('sidebarjs');
     var instance = void 0;
     return Object.create({
@@ -211,7 +208,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
   }
 
   /* @ngInject */
-  function sidebarjsDirective(action) {
+  function SidebarJSDirective(action) {
     return {
       /* @ngInject */
       controller: ["SidebarJS", function ctrl(SidebarJS) {
@@ -226,7 +223,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     };
   }
 
-  angular.module('angular-sidebarjs', []).factory('SidebarJS', SidebarJS).component('sidebarjs', { transclude: true, controller: SidebarCtrl }).directive('sidebarjsOpen', sidebarjsDirective.bind(null, 'open')).directive('sidebarjsClose', sidebarjsDirective.bind(null, 'close')).directive('sidebarjsToggle', sidebarjsDirective.bind(null, 'toggle'));
+  angular.module('angular-sidebarjs', []).factory('SidebarJS', SidebarJSFactory).component('sidebarjs', { transclude: true, controller: SidebarJSCtrl }).directive('sidebarjsOpen', SidebarJSDirective.bind(null, 'open')).directive('sidebarjsClose', SidebarJSDirective.bind(null, 'close')).directive('sidebarjsToggle', SidebarJSDirective.bind(null, 'toggle'));
 })();
 
-},{"sidebarjs":1}]},{},[2]);
+},{"sidebarjs":2}]},{},[3]);
