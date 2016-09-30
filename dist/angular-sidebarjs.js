@@ -33,14 +33,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       this.component.appendChild(this.container);
       this.component.appendChild(this.background);
 
-      var _actions = ['toggle', 'open', 'close'];
-      for (var i = 0; i < _actions.length; i++) {
-        var _elements = document.querySelectorAll('[' + sidebarjs + '-' + _actions[i] + ']');
-        for (var j = 0; j < _elements.length; j++) {
-          _elements[j].addEventListener('click', this[_actions[i]].bind(this));
-        }
-      }
-
+      this.addAttributesEvents();
       this.component.addEventListener('touchstart', this.onTouchStart.bind(this));
       this.component.addEventListener('touchmove', this.onTouchMove.bind(this));
       this.component.addEventListener('touchend', this.onTouchEnd.bind(this));
@@ -48,6 +41,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }
 
     _createClass(SidebarJS, [{
+      key: 'addAttributesEvents',
+      value: function addAttributesEvents() {
+        var _actions = ['toggle', 'open', 'close'];
+        for (var i = 0; i < _actions.length; i++) {
+          var _elements = document.querySelectorAll('[' + sidebarjs + '-' + _actions[i] + ']');
+          for (var j = 0; j < _elements.length; j++) {
+            if (!SidebarJS.elemHasListener(_elements[j])) {
+              _elements[j].addEventListener('click', this[_actions[i]].bind(this));
+              SidebarJS.elemHasListener(_elements[j], true);
+            }
+          }
+        }
+      }
+    }, {
       key: 'toggle',
       value: function toggle() {
         this.component.classList.contains(isVisible) ? this.close() : this.open();
@@ -88,6 +95,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this.background.removeAttribute('style');
       }
     }], [{
+      key: 'init',
+      value: function init() {
+        new SidebarJS();
+      }
+    }, {
       key: 'create',
       value: function create(element) {
         var el = document.createElement('div');
@@ -106,6 +118,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         return el;
       }
     }, {
+      key: 'elemHasListener',
+      value: function elemHasListener(elem, value) {
+        return elem && value ? elem.sidebarjsListener = value : elem.sidebarjsListener;
+      }
+    }, {
       key: 'version',
       get: function get() {
         return '1.5.0';
@@ -115,6 +132,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     return SidebarJS;
   }();
 }());
+
 },{}],2:[function(require,module,exports){
 'use strict';
 
@@ -172,34 +190,42 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 
   function SidebarJS() {
+    var SidebarJS = window.SidebarJS || require('sidebarjs');
     var instance = void 0;
-
-    return Object.create({ init: init }, {
-      open: { writable: false, configurable: false, enumerable: false, value: open },
-      close: { writable: false, configurable: false, enumerable: false, value: close },
-      toggle: { writable: false, configurable: false, enumerable: false, value: toggle }
+    return Object.create({
+      init: function init() {
+        return instance = new SidebarJS();
+      }
+    }, {
+      open: { writable: false, configurable: false, enumerable: false, value: function value() {
+          return instance.open();
+        } },
+      close: { writable: false, configurable: false, enumerable: false, value: function value() {
+          return instance.close();
+        } },
+      toggle: { writable: false, configurable: false, enumerable: false, value: function value() {
+          return instance.toggle();
+        } },
+      elemHasListener: { writable: false, configurable: false, enumerable: false, value: SidebarJS.elemHasListener }
     });
-
-    function init() {
-      var SIDEBAR_JS = window.SidebarJS || require('sidebarjs');
-      instance = new SIDEBAR_JS();
-      SIDEBAR_JS = null;
-    }
-
-    function open() {
-      instance.open();
-    }
-
-    function close() {
-      instance.close();
-    }
-
-    function toggle() {
-      instance.toggle();
-    }
   }
 
-  angular.module('angular-sidebarjs', []).component('sidebarjs', { transclude: true, controller: SidebarCtrl }).factory('SidebarJS', SidebarJS);
+  function sidebarjsDirective(action) {
+    return {
+      /* @ngInject */
+      controller: ["SidebarJS", function ctrl(SidebarJS) {
+        this.SidebarJS = SidebarJS;
+      }],
+      link: function link(scope, elem, attrs, ctrl) {
+        if (!ctrl.SidebarJS.elemHasListener(elem[0])) {
+          elem[0].addEventListener('click', ctrl.SidebarJS[action]);
+          ctrl.SidebarJS.elemHasListener(elem[0], true);
+        }
+      }
+    };
+  }
+
+  angular.module('angular-sidebarjs', []).factory('SidebarJS', SidebarJS).component('sidebarjs', { transclude: true, controller: SidebarCtrl }).directive('sidebarjsOpen', sidebarjsDirective.bind(null, 'open')).directive('sidebarjsClose', sidebarjsDirective.bind(null, 'close')).directive('sidebarjsToggle', sidebarjsDirective.bind(null, 'toggle'));
 })();
 
 },{"sidebarjs":1}]},{},[2]);

@@ -21,12 +21,12 @@ angular
   controller: function(SidebarJS) {
     this.clickLink = function() {
       SidebarJS.close();
-    }
+    };
   },
   template: `
     <button sidebarjs-toggle>toggle sidebarjs</button>
     <sidebarjs>
-    <button sidebarjs-toggle>toggle again</button>
+      <button sidebarjs-toggle>toggle again</button>
       <nav>
         <a ui-sref="home" ng-click="$ctrl.clickLink()">Home</a>
         <a ui-sref="about" ng-click="$ctrl.clickLink()">About</a>
@@ -41,6 +41,7 @@ angular
   },
   template: `
     <h1>{{$ctrl.title}}</h1>
+    <button sidebarjs-toggle>toggle view</button>
   `
 })
 .component('about', {
@@ -49,5 +50,6 @@ angular
   },
   template: `
     <h1>{{$ctrl.title}}</h1>
+    <button sidebarjs-toggle>toggle view</button>
   `
 });
