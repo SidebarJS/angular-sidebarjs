@@ -32,7 +32,7 @@
 
   /* @ngInject */
   function SidebarJSFactory() {
-    let SidebarJS = window.SidebarJS || require('sidebarjs');
+    let SidebarJS = window.SidebarJS || require('./../node_modules/sidebarjs/dist/sidebarjs.js');
     let instance;
     return Object.create({
       init: () => instance = new SidebarJS()
@@ -61,7 +61,7 @@
   }
 
   angular
-    .module('angular-sidebarjs', [])
+    .module('ngSidebarJS', [])
     .factory('SidebarJS', SidebarJSFactory)
     .component('sidebarjs', {transclude: true,controller: SidebarJSCtrl})
     .directive('sidebarjsOpen', SidebarJSDirective.bind(null, 'open'))
