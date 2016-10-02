@@ -35,5 +35,5 @@ const App = {
 };
 
 angular
-.module('Demo', ['angular-sidebarjs'])
+.module('Demo', ['ngSidebarJS'])
 .component('app', App);
