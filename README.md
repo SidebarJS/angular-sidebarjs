@@ -21,6 +21,11 @@ Require
 require('angular-sidebarjs');
 ```
 
+ES6
+```js
+import ngSidebarJS from 'angular-sidebarjs';
+```
+
 ## Implementation
 ### Download files
 Download and save all files
