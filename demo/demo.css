@@ -13,6 +13,11 @@ body {
 app {
   display: block;
 }
+main > span {
+  display: block;
+  text-align: right;
+  padding: 8px;
+}
 main > div {
   position: fixed;
   z-index: 9999;

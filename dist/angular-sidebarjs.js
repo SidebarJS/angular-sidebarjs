@@ -17,23 +17,36 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
   }
 })(function () {
   var sidebarjs = 'sidebarjs';
-  var isVisible = sidebarjs + '--is-visible';
+  var _isVisible = sidebarjs + '--is-visible';
   var isMoving = sidebarjs + '--is-moving';
 
   return function () {
     function SidebarJS() {
+      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
       _classCallCheck(this, SidebarJS);
 
-      this.component = document.querySelector('[' + sidebarjs + ']');
-      this.container = SidebarJS.create(sidebarjs + '-container');
-      this.background = SidebarJS.create(sidebarjs + '-background');
+      this.component = options.component || document.querySelector('[' + sidebarjs + ']');
+      this.container = options.container || SidebarJS.create(sidebarjs + '-container');
+      this.background = options.background || SidebarJS.create(sidebarjs + '-background');
+      this.documentMinSwipeX = options.documentMinSwipeX || 10;
+      this.documentSwipeRange = options.documentSwipeRange || 40;
+      this.swipeOpen = options.swipeOpen !== false;
 
-      this.container.innerHTML = this.component.innerHTML;
-      this.component.innerHTML = '';
-      this.component.appendChild(this.container);
-      this.component.appendChild(this.background);
+      if (!options.component && !options.container && !options.background) {
+        this.container.innerHTML = this.component.innerHTML;
+        this.component.innerHTML = '';
+        this.component.appendChild(this.container);
+        this.component.appendChild(this.background);
+      }
 
-      this.addAttributesEvents();
+      if (this.swipeOpen) {
+        document.addEventListener('touchstart', this.onDocumentTouchStart.bind(this));
+        document.addEventListener('touchmove', this.onDocumentTouchMove.bind(this));
+        document.addEventListener('touchend', this.onDocumentTouchEnd.bind(this));
+      }
+
+      this.addAttrsEventsListeners();
       this.component.addEventListener('touchstart', this.onTouchStart.bind(this));
       this.component.addEventListener('touchmove', this.onTouchMove.bind(this));
       this.component.addEventListener('touchend', this.onTouchEnd.bind(this));
@@ -41,33 +54,64 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }
 
     _createClass(SidebarJS, [{
-      key: 'addAttributesEvents',
-      value: function addAttributesEvents() {
-        var _actions = ['toggle', 'open', 'close'];
-        for (var i = 0; i < _actions.length; i++) {
-          var _elements = document.querySelectorAll('[' + sidebarjs + '-' + _actions[i] + ']');
-          for (var j = 0; j < _elements.length; j++) {
-            if (!SidebarJS.elemHasListener(_elements[j])) {
-              _elements[j].addEventListener('click', this[_actions[i]].bind(this));
-              SidebarJS.elemHasListener(_elements[j], true);
+      key: 'addAttrsEventsListeners',
+      value: function addAttrsEventsListeners() {
+        var actions = ['toggle', 'open', 'close'];
+        for (var i = 0; i < actions.length; i++) {
+          var elements = document.querySelectorAll('[' + sidebarjs + '-' + actions[i] + ']');
+          for (var j = 0; j < elements.length; j++) {
+            if (!SidebarJS.elemHasListener(elements[j])) {
+              elements[j].addEventListener('click', this[actions[i]].bind(this));
+              SidebarJS.elemHasListener(elements[j], true);
             }
           }
         }
       }
     }, {
+      key: 'onDocumentTouchStart',
+      value: function onDocumentTouchStart(e) {
+        if (e.touches[0].clientX < this.documentSwipeRange) {
+          this.initialDocumentTouchX = e.touches[0].clientX;
+          this.onTouchStart(e);
+        }
+      }
+    }, {
+      key: 'onDocumentTouchMove',
+      value: function onDocumentTouchMove(e) {
+        if (this.initialDocumentTouchX && !this.isVisible()) {
+          var difference = e.touches[0].clientX - this.initialDocumentTouchX;
+          if (difference > this.documentMinSwipeX) {
+            this.movedDocumentTouchX = true;
+            SidebarJS.vendorify(this.component, 'transform', 'translate(0, 0)');
+            SidebarJS.vendorify(this.component, 'transition', 'none');
+            this.onTouchMove(e);
+          }
+        }
+      }
+    }, {
+      key: 'onDocumentTouchEnd',
+      value: function onDocumentTouchEnd() {
+        this.initialDocumentTouchX = 0;
+        if (this.movedDocumentTouchX) {
+          this.movedDocumentTouchX = 0;
+          this.component.removeAttribute('style');
+          this.onTouchEnd();
+        }
+      }
+    }, {
       key: 'toggle',
       value: function toggle() {
-        this.component.classList.contains(isVisible) ? this.close() : this.open();
+        this.component.classList.contains(_isVisible) ? this.close() : this.open();
       }
     }, {
       key: 'open',
       value: function open() {
-        this.component.classList.add(isVisible);
+        this.component.classList.add(_isVisible);
       }
     }, {
       key: 'close',
       value: function close() {
-        this.component.classList.remove(isVisible);
+        this.component.classList.remove(_isVisible);
       }
     }, {
       key: 'onTouchStart',
@@ -78,10 +122,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       key: 'onTouchMove',
       value: function onTouchMove(e) {
         this.container.touchMove = this.container.touchStart - e.touches[0].pageX;
-        if (this.container.touchMove > 0) {
+        this.container.touchMoveDocument = e.touches[0].pageX - this.container.clientWidth;
+        if (this.container.touchMove >= 0 || this.movedDocumentTouchX && this.container.touchMoveDocument <= 0) {
           this.component.classList.add(isMoving);
-          SidebarJS.vendorify(this.container, 'transform', 'translate(' + -this.container.touchMove + 'px, 0)');
-          var opacity = 0.3 - this.container.touchMove / (this.container.clientWidth * 3.5);
+          var movement = this.movedDocumentTouchX ? this.container.touchMoveDocument : -this.container.touchMove;
+          SidebarJS.vendorify(this.container, 'transform', 'translate(' + movement + 'px, 0)');
+          var opacity = 0.3 - -movement / (this.container.clientWidth * 3.5);
           this.background.style.opacity = opacity.toString();
         }
       }
@@ -93,6 +139,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this.container.touchMove = 0;
         this.container.removeAttribute('style');
         this.background.removeAttribute('style');
+      }
+    }, {
+      key: 'isVisible',
+      value: function isVisible() {
+        return this.component.classList.contains(_isVisible);
       }
     }], [{
       key: 'create',
@@ -120,7 +171,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: 'version',
       get: function get() {
-        return '1.6.1';
+        return '1.7.1';
       }
     }]);
 
@@ -128,52 +179,61 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
   }();
 }());
 },{}],2:[function(require,module,exports){
+module.exports = require('./dist/sidebarjs.js');
+
+},{"./dist/sidebarjs.js":1}],3:[function(require,module,exports){
 'use strict';
+
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 (function () {
-  /* @ngInject */
-  SidebarJSDirective.$inject = ["action"];
   var SidebarJSCtrl = function () {
     /* @ngInject */
-    SidebarJSCtrl.$inject = ["$transclude", "$element", "SidebarJS"];
-    function SidebarJSCtrl($transclude, $element, SidebarJS) {
+    SidebarJSCtrl.$inject = ["$scope", "$element", "SidebarJS"];
+    function SidebarJSCtrl($scope, $element, SidebarJS) {
       _classCallCheck(this, SidebarJSCtrl);
 
+      this._$scope = $scope;
+      this._SidebarJS = SidebarJS;
       this.elem = $element[0];
-      this.transclude = $transclude;
-      this.SidebarJS = SidebarJS;
-      this.transcludedContent;
-      this.transcludedScope;
     }
 
     _createClass(SidebarJSCtrl, [{
       key: '$onInit',
       value: function $onInit() {
         this.elem.setAttribute('sidebarjs', '');
-        this.SidebarJS.init();
       }
     }, {
       key: '$postLink',
       value: function $postLink() {
         var _this = this;
 
-        this.transclude(function (clone, scope) {
-          for (var i = 0; i < clone.length; i++) {
-            _this.elem.children[0].appendChild(clone[i]);
-          }
-          _this.transcludedContent = clone;
-          _this.transcludedScope = scope;
+        var _elem$children = _slicedToArray(this.elem.children, 2),
+            container = _elem$children[0],
+            background = _elem$children[1];
+
+        this._SidebarJS.init({
+          component: this.elem,
+          container: container,
+          background: background
         });
-      }
-    }, {
-      key: '$onDestroy',
-      value: function $onDestroy() {
-        this.transcludedScope.$destroy();
-        this.transcludedScope = this.transcludedContent = null;
+
+        var wasVisible = false;
+        container.addEventListener('transitionend', function () {
+          var isVisible = _this._SidebarJS.isVisible();
+          if (_this.onOpen && isVisible && !wasVisible) {
+            wasVisible = true;
+            _this.onOpen();
+          } else if (_this.onClose && !isVisible && wasVisible) {
+            wasVisible = false;
+            _this.onClose();
+          }
+          _this._$scope.$applyAsync();
+        }, false);
       }
     }]);
 
@@ -184,27 +244,28 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 
   function SidebarJSFactory() {
-    var SidebarJS = window.SidebarJS || require('./../node_modules/sidebarjs/dist/sidebarjs.js');
+    var _SidebarJS = require('sidebarjs');
     var instance = void 0;
-    return Object.create({
-      init: function init() {
-        return instance = new SidebarJS();
-      }
-    }, {
-      open: { writable: false, configurable: false, enumerable: false, value: function value() {
-          return instance.open();
-        } },
-      close: { writable: false, configurable: false, enumerable: false, value: function value() {
-          return instance.close();
-        } },
-      toggle: { writable: false, configurable: false, enumerable: false, value: function value() {
-          return instance.toggle();
-        } },
-      elemHasListener: { writable: false, configurable: false, enumerable: false, value: SidebarJS.elemHasListener }
-    });
+    return {
+      init: function init(options) {
+        return instance = new _SidebarJS(options);
+      },
+      open: function open() {
+        return instance.open();
+      },
+      close: function close() {
+        return instance.close();
+      },
+      toggle: function toggle() {
+        return instance.toggle();
+      },
+      isVisible: function isVisible() {
+        return instance.isVisible();
+      },
+      elemHasListener: _SidebarJS.elemHasListener
+    };
   }
 
-  /* @ngInject */
   function SidebarJSDirective(action) {
     return {
       /* @ngInject */
@@ -220,7 +281,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     };
   }
 
-  angular.module('ngSidebarJS', []).factory('SidebarJS', SidebarJSFactory).component('sidebarjs', { transclude: true, controller: SidebarJSCtrl }).directive('sidebarjsOpen', SidebarJSDirective.bind(null, 'open')).directive('sidebarjsClose', SidebarJSDirective.bind(null, 'close')).directive('sidebarjsToggle', SidebarJSDirective.bind(null, 'toggle'));
+  angular.module('ngSidebarJS', []).factory('SidebarJS', SidebarJSFactory).component('sidebarjs', {
+    template: '<div sidebarjs-container ng-transclude></div><div sidebarjs-background></div>',
+    transclude: true,
+    controller: SidebarJSCtrl,
+    bindings: {
+      onOpen: '&?',
+      onClose: '&?'
+    }
+  }).directive('sidebarjsOpen', SidebarJSDirective.bind(null, 'open')).directive('sidebarjsClose', SidebarJSDirective.bind(null, 'close')).directive('sidebarjsToggle', SidebarJSDirective.bind(null, 'toggle'));
 })();
 
-},{"./../node_modules/sidebarjs/dist/sidebarjs.js":1}]},{},[2]);
+},{"sidebarjs":2}]},{},[3]);

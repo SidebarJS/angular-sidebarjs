@@ -1,50 +1,54 @@
-'use strict';
+(function () {
 
-(function() {
-  /* @ngInject */
   class SidebarJSCtrl {
     /* @ngInject */
-    constructor($transclude, $element, SidebarJS) {
+    constructor($scope, $element, SidebarJS) {
+      this._$scope = $scope;
+      this._SidebarJS = SidebarJS;
       this.elem = $element[0];
-      this.transclude = $transclude;
-      this.SidebarJS = SidebarJS;
-      this.transcludedContent;
-      this.transcludedScope;
     }
+
     $onInit() {
       this.elem.setAttribute('sidebarjs', '');
-      this.SidebarJS.init();
     }
+
     $postLink() {
-      this.transclude((clone, scope) => {
-        for(let i = 0; i < clone.length; i++) {
-          this.elem.children[0].appendChild(clone[i]);
-        }
-        this.transcludedContent = clone;
-        this.transcludedScope = scope;
+      const [container, background] = this.elem.children;
+      this._SidebarJS.init({
+        component: this.elem,
+        container,
+        background,
       });
-    }
-    $onDestroy() {
-      this.transcludedScope.$destroy();
-      this.transcludedScope = this.transcludedContent = null;
+
+      let wasVisible = false;
+      container.addEventListener('transitionend', () => {
+        const isVisible = this._SidebarJS.isVisible();
+        if (this.onOpen && isVisible && !wasVisible) {
+          wasVisible = true;
+          this.onOpen();
+        } else if (this.onClose && !isVisible && wasVisible) {
+          wasVisible = false;
+          this.onClose();
+        }
+        this._$scope.$applyAsync();
+      }, false);
     }
   }
 
   /* @ngInject */
   function SidebarJSFactory() {
-    let SidebarJS = window.SidebarJS || require('./../node_modules/sidebarjs/dist/sidebarjs.js');
+    const _SidebarJS = require('sidebarjs');
     let instance;
-    return Object.create({
-      init: () => instance = new SidebarJS()
-    }, {
-      open: {writable: false, configurable: false, enumerable: false, value: () => instance.open()},
-      close: {writable: false, configurable: false, enumerable: false, value: () => instance.close()},
-      toggle: {writable: false, configurable: false, enumerable: false, value: () => instance.toggle()},
-      elemHasListener: {writable: false, configurable: false, enumerable: false, value: SidebarJS.elemHasListener}
-    });
+    return {
+      init: options => instance = new _SidebarJS(options),
+      open: () => instance.open(),
+      close: () => instance.close(),
+      toggle: () => instance.toggle(),
+      isVisible: () => instance.isVisible(),
+      elemHasListener: _SidebarJS.elemHasListener,
+    };
   }
 
-  /* @ngInject */
   function SidebarJSDirective(action) {
     return {
       /* @ngInject */
@@ -52,19 +56,27 @@
         this.SidebarJS = SidebarJS;
       },
       link: function link(scope, elem, attrs, ctrl) {
-        if(!ctrl.SidebarJS.elemHasListener(elem[0])) {
+        if (!ctrl.SidebarJS.elemHasListener(elem[0])) {
           elem[0].addEventListener('click', ctrl.SidebarJS[action]);
           ctrl.SidebarJS.elemHasListener(elem[0], true);
         }
-      }
+      },
     };
   }
 
   angular
-    .module('ngSidebarJS', [])
-    .factory('SidebarJS', SidebarJSFactory)
-    .component('sidebarjs', {transclude: true,controller: SidebarJSCtrl})
-    .directive('sidebarjsOpen', SidebarJSDirective.bind(null, 'open'))
-    .directive('sidebarjsClose', SidebarJSDirective.bind(null, 'close'))
-    .directive('sidebarjsToggle', SidebarJSDirective.bind(null, 'toggle'));
+  .module('ngSidebarJS', [])
+  .factory('SidebarJS', SidebarJSFactory)
+  .component('sidebarjs', {
+    template: '<div sidebarjs-container ng-transclude></div><div sidebarjs-background></div>',
+    transclude: true,
+    controller: SidebarJSCtrl,
+    bindings: {
+      onOpen: '&?',
+      onClose: '&?',
+    },
+  })
+  .directive('sidebarjsOpen', SidebarJSDirective.bind(null, 'open'))
+  .directive('sidebarjsClose', SidebarJSDirective.bind(null, 'close'))
+  .directive('sidebarjsToggle', SidebarJSDirective.bind(null, 'toggle'));
 })();
