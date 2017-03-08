@@ -13,7 +13,8 @@
     }
 
     $postLink() {
-      const [container, background] = this.elem.children;
+      const container = this.elem.children[0];
+      const background = this.elem.children[1];
       this._SidebarJS.init({
         component: this.elem,
         container,
