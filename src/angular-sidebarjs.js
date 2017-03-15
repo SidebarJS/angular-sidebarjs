@@ -15,11 +15,12 @@
     $postLink() {
       const container = this.elem.children[0];
       const background = this.elem.children[1];
-      this._SidebarJS.init({
+      const options = Object.assign({}, this.sidebarjsConfig, {
         component: this.elem,
         container,
         background,
       });
+      this._SidebarJS.init(options);
 
       let wasVisible = false;
       container.addEventListener('transitionend', () => {
@@ -75,6 +76,7 @@
     bindings: {
       onOpen: '&?',
       onClose: '&?',
+      sidebarjsConfig: '<?',
     },
   })
   .directive('sidebarjsOpen', SidebarJSDirective.bind(null, 'open'))
