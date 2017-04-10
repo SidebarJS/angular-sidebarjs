@@ -19,9 +19,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var sidebarjs = 'sidebarjs';
 var isVisible = sidebarjs + "--is-visible";
 var isMoving = sidebarjs + "--is-moving";
+var LEFT_POSITION = 'left';
+var RIGHT_POSITION = 'right';
+var TRANSITION_DURATION = 400;
+var POSITIONS = [LEFT_POSITION, RIGHT_POSITION];
 var SidebarJS = (function () {
     function SidebarJS(_a) {
-        var _b = _a === void 0 ? {} : _a, component = _b.component, container = _b.container, background = _b.background, documentMinSwipeX = _b.documentMinSwipeX, documentSwipeRange = _b.documentSwipeRange, nativeSwipe = _b.nativeSwipe, nativeSwipeOpen = _b.nativeSwipeOpen;
+        var _b = _a === void 0 ? {} : _a, component = _b.component, container = _b.container, background = _b.background, documentMinSwipeX = _b.documentMinSwipeX, documentSwipeRange = _b.documentSwipeRange, nativeSwipe = _b.nativeSwipe, nativeSwipeOpen = _b.nativeSwipeOpen, position = _b.position;
         this.component = component || document.querySelector("[" + sidebarjs + "]");
         this.container = container || SidebarJS.create(sidebarjs + "-container");
         this.background = background || SidebarJS.create(sidebarjs + "-background");
@@ -44,6 +48,7 @@ var SidebarJS = (function () {
                 this.addNativeOpenGestures();
             }
         }
+        this.setPosition(position);
         this.addAttrsEventsListeners();
         this.background.addEventListener('click', this.close.bind(this));
     }
@@ -59,6 +64,14 @@ var SidebarJS = (function () {
     SidebarJS.prototype.isVisible = function () {
         return this.component.classList.contains(isVisible);
     };
+    SidebarJS.prototype.setPosition = function (position) {
+        var _this = this;
+        this.component.classList.add(isMoving);
+        this.position = POSITIONS.indexOf(position) >= 0 ? position : LEFT_POSITION;
+        POSITIONS.forEach(function (POS) { return _this.component.classList.remove(sidebarjs + "--" + POS); });
+        this.component.classList.add(sidebarjs + "--" + (this.hasRightPosition() ? RIGHT_POSITION : LEFT_POSITION));
+        setTimeout(function () { return _this.component.classList.remove(isMoving); }, TRANSITION_DURATION);
+    };
     SidebarJS.prototype.addAttrsEventsListeners = function () {
         var actions = ['toggle', 'open', 'close'];
         for (var i = 0; i < actions.length; i++) {
@@ -70,6 +83,12 @@ var SidebarJS = (function () {
                 }
             }
         }
+    };
+    SidebarJS.prototype.hasLeftPosition = function () {
+        return this.position === LEFT_POSITION;
+    };
+    SidebarJS.prototype.hasRightPosition = function () {
+        return this.position === RIGHT_POSITION;
     };
     SidebarJS.prototype.transcludeContent = function () {
         this.container.innerHTML = this.component.innerHTML;
@@ -83,22 +102,24 @@ var SidebarJS = (function () {
         this.component.addEventListener('touchend', this.onTouchEnd.bind(this));
     };
     SidebarJS.prototype.addNativeOpenGestures = function () {
-        document.addEventListener('touchstart', this.onDocumentTouchStart.bind(this));
-        document.addEventListener('touchmove', this.onDocumentTouchMove.bind(this));
-        document.addEventListener('touchend', this.onDocumentTouchEnd.bind(this));
+        document.addEventListener('touchstart', this.onSwipeOpenStart.bind(this));
+        document.addEventListener('touchmove', this.onSwipeOpenMove.bind(this));
+        document.addEventListener('touchend', this.onSwipeOpenEnd.bind(this));
     };
     SidebarJS.prototype.onTouchStart = function (e) {
         this.initialTouch = e.touches[0].pageX;
     };
     SidebarJS.prototype.onTouchMove = function (e) {
-        this.touchMoveSidebar = this.initialTouch - e.touches[0].pageX;
-        if (this.touchMoveSidebar >= 0) {
-            this.moveSidebar(-this.touchMoveSidebar);
+        var documentSwiped = this.initialTouch - e.touches[0].clientX;
+        var sidebarMovement = this.getSidebarPosition(documentSwiped);
+        this.touchMoveSidebar = -documentSwiped;
+        if (sidebarMovement <= this.container.clientWidth) {
+            this.moveSidebar(this.touchMoveSidebar);
         }
     };
     SidebarJS.prototype.onTouchEnd = function () {
         this.component.classList.remove(isMoving);
-        this.touchMoveSidebar > (this.container.clientWidth / 3.5) ? this.close() : this.open();
+        Math.abs(this.touchMoveSidebar) > (this.container.clientWidth / 3.5) ? this.close() : this.open();
         this.container.removeAttribute('style');
         this.background.removeAttribute('style');
         delete this.initialTouch;
@@ -110,34 +131,38 @@ var SidebarJS = (function () {
         this.changeBackgroundOpacity(movement);
     };
     SidebarJS.prototype.changeBackgroundOpacity = function (movement) {
-        var opacity = 0.3 - (-movement / (this.container.clientWidth * 3.5));
+        var opacity = 0.3 - (Math.abs(movement) / (this.container.clientWidth * 3.5));
         this.background.style.opacity = (opacity).toString();
     };
-    SidebarJS.prototype.onDocumentTouchStart = function (e) {
+    SidebarJS.prototype.onSwipeOpenStart = function (e) {
+        var clientWidth = document.body.clientWidth;
         var touchPositionX = e.touches[0].clientX;
-        if (touchPositionX < this.documentSwipeRange) {
+        var documentTouch = this.hasLeftPosition() ? touchPositionX : clientWidth - touchPositionX;
+        if (documentTouch < this.documentSwipeRange) {
             this.onTouchStart(e);
         }
     };
-    SidebarJS.prototype.onDocumentTouchMove = function (e) {
+    SidebarJS.prototype.onSwipeOpenMove = function (e) {
         if (this.initialTouch && !this.isVisible()) {
             var documentSwiped = e.touches[0].clientX - this.initialTouch;
-            if (documentSwiped > this.documentMinSwipeX) {
-                this.touchMoveDocument = e.touches[0].pageX - this.container.clientWidth;
+            var sidebarMovement = this.getSidebarPosition(documentSwiped);
+            if (sidebarMovement > 0) {
                 SidebarJS.vendorify(this.component, 'transform', 'translate(0, 0)');
                 SidebarJS.vendorify(this.component, 'transition', 'none');
-                if (this.touchMoveDocument <= 0) {
-                    this.moveSidebar(this.touchMoveDocument);
-                }
+                this.openMovement = sidebarMovement * (this.hasLeftPosition() ? -1 : 1);
+                this.moveSidebar(this.openMovement);
             }
         }
     };
-    SidebarJS.prototype.onDocumentTouchEnd = function () {
-        if (this.touchMoveDocument) {
-            delete this.touchMoveDocument;
+    SidebarJS.prototype.onSwipeOpenEnd = function () {
+        if (this.openMovement) {
+            delete this.openMovement;
             this.component.removeAttribute('style');
             this.onTouchEnd();
         }
+    };
+    SidebarJS.prototype.getSidebarPosition = function (swiped) {
+        return (this.container.clientWidth - (this.hasLeftPosition() ? swiped : -swiped));
     };
     SidebarJS.create = function (element) {
         var el = document.createElement('div');
@@ -158,7 +183,7 @@ var SidebarJS = (function () {
     };
     Object.defineProperty(SidebarJS, "version", {
         get: function () {
-            return '1.9.0';
+            return '1.10.0';
         },
         enumerable: true,
         configurable: true
@@ -245,16 +270,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         return instance = new _SidebarJS(options);
       },
       open: function open() {
-        return instance.open();
+        return instance && instance.open();
       },
       close: function close() {
-        return instance.close();
+        return instance && instance.close();
       },
       toggle: function toggle() {
-        return instance.toggle();
+        return instance && instance.toggle();
       },
       isVisible: function isVisible() {
-        return instance.isVisible();
+        return !!instance && instance.isVisible();
       },
       elemHasListener: _SidebarJS.elemHasListener
     };

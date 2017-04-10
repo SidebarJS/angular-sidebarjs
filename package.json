@@ -1,6 +1,6 @@
 {
   "name": "angular-sidebarjs",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Create mobile sidebar/sidenav experiance in angularjs",
   "main": "index.js",
   "scripts": {
@@ -42,6 +42,6 @@
   },
   "dependencies": {
     "angular": "^1.5.8",
-    "sidebarjs": "1.9.0"
+    "sidebarjs": "1.10.0"
   }
 }

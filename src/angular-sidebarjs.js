@@ -43,10 +43,10 @@
     let instance;
     return {
       init: options => instance = new _SidebarJS(options),
-      open: () => instance.open(),
-      close: () => instance.close(),
-      toggle: () => instance.toggle(),
-      isVisible: () => instance.isVisible(),
+      open: () => instance && instance.open(),
+      close: () => instance && instance.close(),
+      toggle: () => instance && instance.toggle(),
+      isVisible: () => !!instance && instance.isVisible(),
       elemHasListener: _SidebarJS.elemHasListener,
     };
   }
