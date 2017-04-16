@@ -47,6 +47,7 @@
       close: () => instance && instance.close(),
       toggle: () => instance && instance.toggle(),
       isVisible: () => !!instance && instance.isVisible(),
+      setPosition: position => instance && instance.setPosition(position),
       elemHasListener: _SidebarJS.elemHasListener,
     };
   }

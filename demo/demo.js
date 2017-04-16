@@ -3,6 +3,7 @@ function AppCtrl(SidebarJS) {
   this.sidebarIsVisible = SidebarJS.isVisible;
   this.onSidebarOpen = onSidebarOpen;
   this.onSidebarClose = onSidebarClose;
+  this.changePosition = changePosition;
 
   function onSidebarOpen() {
     console.log('is open!');
@@ -10,6 +11,10 @@ function AppCtrl(SidebarJS) {
 
   function onSidebarClose() {
     console.log('is close!');
+  }
+
+  function changePosition(newPosition) {
+    SidebarJS.setPosition(newPosition);
   }
 }
 

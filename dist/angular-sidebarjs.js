@@ -281,6 +281,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       isVisible: function isVisible() {
         return !!instance && instance.isVisible();
       },
+      setPosition: function setPosition(position) {
+        return instance && instance.setPosition(position);
+      },
       elemHasListener: _SidebarJS.elemHasListener
     };
   }

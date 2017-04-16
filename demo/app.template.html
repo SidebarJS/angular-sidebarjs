@@ -21,4 +21,21 @@
 <main>
   <span>SidebarJS is open: {{app.sidebarIsVisible()}}</span>
   <div ng-click="app.toggleSidebarJS()">Toggle via javascript</div>
+  <section>
+    <h2>Position</h2>
+    <input id="leftPosition"
+           type="radio"
+           name="position"
+           value="left"
+           ng-model="app.sidebarPosition"
+           ng-change="app.changePosition(app.sidebarPosition)">
+    <label for="leftPosition">Left</label>
+    <input id="rightPosition"
+           type="radio"
+           name="position"
+           value="right"
+           ng-model="app.sidebarPosition"
+           ng-change="app.changePosition(app.sidebarPosition)">
+    <label for="rightPosition">Right</label>
+  </section>
 </main>
