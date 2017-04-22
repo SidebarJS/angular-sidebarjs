@@ -49,7 +49,7 @@ var SidebarJS = (function () {
             }
         }
         this.setPosition(position);
-        this.addAttrsEventsListeners();
+        this.addAttrsEventsListeners(this.component.getAttribute(sidebarjs));
         this.background.addEventListener('click', this.close.bind(this));
     }
     SidebarJS.prototype.toggle = function () {
@@ -72,10 +72,10 @@ var SidebarJS = (function () {
         this.component.classList.add(sidebarjs + "--" + (this.hasRightPosition() ? RIGHT_POSITION : LEFT_POSITION));
         setTimeout(function () { return _this.component.classList.remove(isMoving); }, TRANSITION_DURATION);
     };
-    SidebarJS.prototype.addAttrsEventsListeners = function () {
+    SidebarJS.prototype.addAttrsEventsListeners = function (sidebarName) {
         var actions = ['toggle', 'open', 'close'];
         for (var i = 0; i < actions.length; i++) {
-            var elements = document.querySelectorAll("[" + sidebarjs + "-" + actions[i] + "]");
+            var elements = document.querySelectorAll("[" + sidebarjs + "-" + actions[i] + "=\"" + sidebarName + "\"]");
             for (var j = 0; j < elements.length; j++) {
                 if (!SidebarJS.elemHasListener(elements[j])) {
                     elements[j].addEventListener('click', this[actions[i]].bind(this));
@@ -135,6 +135,9 @@ var SidebarJS = (function () {
         this.background.style.opacity = (opacity).toString();
     };
     SidebarJS.prototype.onSwipeOpenStart = function (e) {
+        if (this.targetElementIsBackground(e)) {
+            return;
+        }
         var clientWidth = document.body.clientWidth;
         var touchPositionX = e.touches[0].clientX;
         var documentTouch = this.hasLeftPosition() ? touchPositionX : clientWidth - touchPositionX;
@@ -143,7 +146,7 @@ var SidebarJS = (function () {
         }
     };
     SidebarJS.prototype.onSwipeOpenMove = function (e) {
-        if (this.initialTouch && !this.isVisible()) {
+        if (!this.targetElementIsBackground(e) && this.initialTouch && !this.isVisible()) {
             var documentSwiped = e.touches[0].clientX - this.initialTouch;
             var sidebarMovement = this.getSidebarPosition(documentSwiped);
             if (sidebarMovement > 0) {
@@ -164,6 +167,10 @@ var SidebarJS = (function () {
     SidebarJS.prototype.getSidebarPosition = function (swiped) {
         return (this.container.clientWidth - (this.hasLeftPosition() ? swiped : -swiped));
     };
+    SidebarJS.prototype.targetElementIsBackground = function (e) {
+        var touchedElement = e.target;
+        return touchedElement.hasAttribute(sidebarjs + "-background");
+    };
     SidebarJS.create = function (element) {
         var el = document.createElement('div');
         el.setAttribute(element, '');
@@ -183,7 +190,7 @@ var SidebarJS = (function () {
     };
     Object.defineProperty(SidebarJS, "version", {
         get: function () {
-            return '1.10.0';
+            return '2.0.0';
         },
         enumerable: true,
         configurable: true
@@ -225,7 +232,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     _createClass(SidebarJSCtrl, [{
       key: '$onInit',
       value: function $onInit() {
-        this.elem.setAttribute('sidebarjs', '');
+        this.sidebarjsName = this.sidebarjsName || '';
+        this.elem.setAttribute('sidebarjs', this.sidebarjsName);
       }
     }, {
       key: '$postLink',
@@ -243,7 +251,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         var wasVisible = false;
         container.addEventListener('transitionend', function () {
-          var isVisible = _this._SidebarJS.isVisible();
+          var isVisible = _this._SidebarJS.isVisible(_this.sidebarjsName);
           if (_this.onOpen && isVisible && !wasVisible) {
             wasVisible = true;
             _this.onOpen();
@@ -264,26 +272,37 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
   function SidebarJSFactory() {
     var _SidebarJS = require('sidebarjs');
-    var instance = void 0;
+    var instances = {};
     return {
       init: function init(options) {
-        return instance = new _SidebarJS(options);
+        instances[options.component.getAttribute('sidebarjs')] = new _SidebarJS(options);
       },
       open: function open() {
-        return instance && instance.open();
+        var sidebarName = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+
+        instances[sidebarName] && instances[sidebarName].open();
       },
       close: function close() {
-        return instance && instance.close();
+        var sidebarName = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+
+        instances[sidebarName] && instances[sidebarName].close();
       },
       toggle: function toggle() {
-        return instance && instance.toggle();
+        var sidebarName = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+
+        instances[sidebarName] && instances[sidebarName].toggle();
       },
       isVisible: function isVisible() {
-        return !!instance && instance.isVisible();
+        var sidebarName = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+
+        return !!instances[sidebarName] && instances[sidebarName].isVisible();
       },
       setPosition: function setPosition(position) {
-        return instance && instance.setPosition(position);
+        var sidebarName = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+
+        instances[sidebarName] && instances[sidebarName].setPosition(position);
       },
+
       elemHasListener: _SidebarJS.elemHasListener
     };
   }
@@ -296,7 +315,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }],
       link: function link(scope, elem, attrs, ctrl) {
         if (!ctrl.SidebarJS.elemHasListener(elem[0])) {
-          elem[0].addEventListener('click', ctrl.SidebarJS[action]);
+          var sidebarName = attrs['sidebarjs' + (action.charAt(0).toUpperCase() + action.slice(1))];
+          elem[0].addEventListener('click', function () {
+            return ctrl.SidebarJS[action](sidebarName);
+          });
           ctrl.SidebarJS.elemHasListener(elem[0], true);
         }
       }
@@ -310,7 +332,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     bindings: {
       onOpen: '&?',
       onClose: '&?',
-      sidebarjsConfig: '<?'
+      sidebarjsConfig: '<?',
+      sidebarjsName: '@?'
     }
   }).directive('sidebarjsOpen', SidebarJSDirective.bind(null, 'open')).directive('sidebarjsClose', SidebarJSDirective.bind(null, 'close')).directive('sidebarjsToggle', SidebarJSDirective.bind(null, 'toggle'));
 })();

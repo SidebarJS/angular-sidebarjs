@@ -9,7 +9,8 @@
     }
 
     $onInit() {
-      this.elem.setAttribute('sidebarjs', '');
+      this.sidebarjsName = this.sidebarjsName || '';
+      this.elem.setAttribute('sidebarjs', this.sidebarjsName);
     }
 
     $postLink() {
@@ -24,7 +25,7 @@
 
       let wasVisible = false;
       container.addEventListener('transitionend', () => {
-        const isVisible = this._SidebarJS.isVisible();
+        const isVisible = this._SidebarJS.isVisible(this.sidebarjsName);
         if (this.onOpen && isVisible && !wasVisible) {
           wasVisible = true;
           this.onOpen();
@@ -40,14 +41,26 @@
   /* @ngInject */
   function SidebarJSFactory() {
     const _SidebarJS = require('sidebarjs');
-    let instance;
+    const instances = {};
     return {
-      init: options => instance = new _SidebarJS(options),
-      open: () => instance && instance.open(),
-      close: () => instance && instance.close(),
-      toggle: () => instance && instance.toggle(),
-      isVisible: () => !!instance && instance.isVisible(),
-      setPosition: position => instance && instance.setPosition(position),
+      init(options) {
+        instances[options.component.getAttribute('sidebarjs')] = new _SidebarJS(options);
+      },
+      open(sidebarName = '') {
+        instances[sidebarName] && instances[sidebarName].open();
+      },
+      close(sidebarName = '') {
+        instances[sidebarName] && instances[sidebarName].close();
+      },
+      toggle(sidebarName = '') {
+        instances[sidebarName] && instances[sidebarName].toggle();
+      },
+      isVisible(sidebarName = '') {
+        return !!instances[sidebarName] && instances[sidebarName].isVisible();
+      },
+      setPosition(position, sidebarName = '') {
+        instances[sidebarName] && instances[sidebarName].setPosition(position);
+      },
       elemHasListener: _SidebarJS.elemHasListener,
     };
   }
@@ -60,7 +73,8 @@
       },
       link: function link(scope, elem, attrs, ctrl) {
         if (!ctrl.SidebarJS.elemHasListener(elem[0])) {
-          elem[0].addEventListener('click', ctrl.SidebarJS[action]);
+          const sidebarName = attrs[`sidebarjs${action.charAt(0).toUpperCase() + action.slice(1)}`];
+          elem[0].addEventListener('click', () => ctrl.SidebarJS[action](sidebarName));
           ctrl.SidebarJS.elemHasListener(elem[0], true);
         }
       },
@@ -78,6 +92,7 @@
       onOpen: '&?',
       onClose: '&?',
       sidebarjsConfig: '<?',
+      sidebarjsName: '@?',
     },
   })
   .directive('sidebarjsOpen', SidebarJSDirective.bind(null, 'open'))

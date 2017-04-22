@@ -1,9 +1,17 @@
 function AppCtrl(SidebarJS) {
-  this.toggleSidebarJS = SidebarJS.toggle;
-  this.sidebarIsVisible = SidebarJS.isVisible;
+  this.toggleSidebarJS = toggleSidebarJS;
+  this.sidebarIsVisible = isVisibleSidebarJS;
   this.onSidebarOpen = onSidebarOpen;
   this.onSidebarClose = onSidebarClose;
   this.changePosition = changePosition;
+
+  function toggleSidebarJS(sidebarName) {
+    SidebarJS.toggle(sidebarName);
+  }
+
+  function isVisibleSidebarJS(sidebarName) {
+    return SidebarJS.isVisible(sidebarName);
+  }
 
   function onSidebarOpen() {
     console.log('is open!');

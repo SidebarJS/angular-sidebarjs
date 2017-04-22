@@ -1,9 +1,12 @@
 <header>
   <div class="icon hamburger-icon" sidebarjs-toggle></div>
   <h1>Angular SidebarJS</h1>
+  <div class="icon hamburger-icon" sidebarjs-toggle="mySecondSidebarJS"></div>
 </header>
 
-<sidebarjs on-close="app.onSidebarClose()" on-open="app.onSidebarOpen()">
+<sidebarjs
+  on-close="app.onSidebarClose()"
+  on-open="app.onSidebarOpen()">
   <h3>Angular SidebarJS</h3>
   <nav>
     <div>
@@ -18,24 +21,34 @@
   </nav>
 </sidebarjs>
 
+<sidebarjs
+  sidebarjs-name="mySecondSidebarJS"
+  sidebarjs-config="{position: 'right'}"
+  on-close="app.onSidebarClose()"
+  on-open="app.onSidebarOpen()">
+  <h3>My Second SidebarJS</h3>
+  <nav>
+    <div>
+      <a sidebarjs-toggle href="https://github.com/SidebarJS/angular-sidebarjs" target="_blank"><div class="img github"></div>Github</a>
+      <a sidebarjs-toggle href="https://www.npmjs.com/package/angular-sidebarjs" target="_blank"><div class="img npm"></div>npm</a>
+      <a sidebarjs-toggle href="https://github.com/lorenzodianni" target="_blank"><div class="img author"></div>Author</a>
+    </div>
+    <div>
+      <a sidebarjs-toggle href="https://github.com/SidebarJS/angular-sidebarjs/blob/master/README.md" target="_blank"><div class="img wiki"></div>Wiki</a>
+      <a sidebarjs-toggle href="https://github.com/SidebarJS/angular-sidebarjs/issues" target="_blank"><div class="img bugs"></div>Bugs</a>
+    </div>
+  </nav>
+</sidebarjs>
+
 <main>
-  <span>SidebarJS is open: {{app.sidebarIsVisible()}}</span>
-  <div ng-click="app.toggleSidebarJS()">Toggle via javascript</div>
   <section>
-    <h2>Position</h2>
-    <input id="leftPosition"
-           type="radio"
-           name="position"
-           value="left"
-           ng-model="app.sidebarPosition"
-           ng-change="app.changePosition(app.sidebarPosition)">
-    <label for="leftPosition">Left</label>
-    <input id="rightPosition"
-           type="radio"
-           name="position"
-           value="right"
-           ng-model="app.sidebarPosition"
-           ng-change="app.changePosition(app.sidebarPosition)">
-    <label for="rightPosition">Right</label>
+    <h2>IsVisible</h2>
+    <p>Left is open: {{app.sidebarIsVisible()}}</p>
+    <p>Right is open: {{app.sidebarIsVisible("mySecondSidebarJS")}}</p>
   </section>
+
+  <div class="app__js-toggle-buttons">
+    <div class="app__js-toggle-button" ng-click="app.toggleSidebarJS()">Toggle left via js</div>
+    <div class="app__js-toggle-button" ng-click="app.toggleSidebarJS('mySecondSidebarJS')">Toggle right via js</div>
+  </div>
 </main>

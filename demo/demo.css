@@ -13,17 +13,23 @@ body {
 app {
   display: block;
 }
-main > span {
-  display: block;
-  text-align: right;
-  padding: 8px;
+main p {
+  font-size: 14px;
+  line-height: 140%;
 }
-main > div {
+main .app__js-toggle-buttons {
+  display: flex;
+  justify-content: space-between;
   position: fixed;
   z-index: 9999;
   left: 16px;
   bottom: 16px;
   right: 16px;
+}
+
+main .app__js-toggle-button {
+  width: 48%;
+  font-size: 14px;
   text-align: center;
   padding: 12px 15px;
   border-radius: 2px;
