@@ -6,6 +6,10 @@ const source = require('vinyl-source-stream');
 const buffer = require('vinyl-buffer');
 const ngAnnotate = require('gulp-ng-annotate');
 const babelify = require('babelify');
+const minifyCSS = require('gulp-minify-css');
+const sass = require('gulp-sass');
+const importCss = require('gulp-import-css');
+
 
 gulp.task('scripts', () =>
   browserify('./src/angular-sidebarjs.js')
@@ -22,8 +26,18 @@ gulp.task('scripts', () =>
   .pipe(uglify())
   .pipe(gulp.dest('./dist')));
 
+gulp.task('styles', () =>
+  gulp.src('./src/*.scss')
+  .pipe(sass().on('error', sass.logError))
+  .pipe(importCss())
+  .pipe(gulp.dest('./dist'))
+  .pipe(rename({extname: '.min.css'}))
+  .pipe(minifyCSS())
+  .pipe(gulp.dest('./dist')));
+
+
 gulp.task('watch', () => {
   gulp.watch('./src/angular-sidebarjs.js', ['scripts']);
 });
 
-gulp.task('build', ['scripts', 'watch']);
+gulp.task('build', ['scripts', 'styles', 'watch']);
