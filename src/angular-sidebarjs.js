@@ -1,5 +1,6 @@
-(function () {
+import {SidebarJS as SidebarCore} from 'sidebarjs';
 
+(function () {
   class SidebarJSCtrl {
     /* @ngInject */
     constructor($scope, $element, SidebarJS) {
@@ -40,11 +41,10 @@
 
   /* @ngInject */
   function SidebarJSFactory() {
-    const _SidebarJS = require('sidebarjs');
     const instances = {};
     return {
       init(options) {
-        instances[options.component.getAttribute('sidebarjs')] = new _SidebarJS(options);
+        instances[options.component.getAttribute('sidebarjs')] = new SidebarCore(options);
       },
       open(sidebarName = '') {
         instances[sidebarName] && instances[sidebarName].open();
@@ -61,7 +61,7 @@
       setPosition(position, sidebarName = '') {
         instances[sidebarName] && instances[sidebarName].setPosition(position);
       },
-      elemHasListener: _SidebarJS.elemHasListener,
+      elemHasListener: SidebarCore.elemHasListener,
     };
   }
 
