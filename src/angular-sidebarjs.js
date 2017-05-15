@@ -1,4 +1,4 @@
-import {SidebarJS as SidebarCore} from 'sidebarjs';
+import SidebarCore from 'sidebarjs';
 
 (function () {
   class SidebarJSCtrl {

@@ -1,9 +1,9 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-	typeof define === 'function' && define.amd ? define(['exports'], factory) :
-	(factory((global.SidebarJS = global.SidebarJS || {})));
-}(this, (function (exports) { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+	typeof define === 'function' && define.amd ? define(factory) :
+	(global.SidebarJS = factory());
+}(this, (function () { 'use strict';
 
 function unwrapExports (x) {
 	return x && x.__esModule ? x['default'] : x;
@@ -190,24 +190,20 @@ var SidebarJS = (function () {
     };
     Object.defineProperty(SidebarJS, "version", {
         get: function () {
-            return '2.0.1';
+            return '2.1.0';
         },
         enumerable: true,
         configurable: true
     });
     return SidebarJS;
 }());
-exports.SidebarJS = SidebarJS;
+exports.default = SidebarJS;
 
 });
 
 var sidebarjs = unwrapExports(sidebarjs_1);
-var sidebarjs_2 = sidebarjs_1.SidebarJS;
 
-exports['default'] = sidebarjs;
-exports.SidebarJS = sidebarjs_2;
-
-Object.defineProperty(exports, '__esModule', { value: true });
+return sidebarjs;
 
 })));
 
@@ -220,6 +216,10 @@ module.exports = require('./dist/sidebarjs.js');
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _sidebarjs = require('sidebarjs');
+
+var _sidebarjs2 = _interopRequireDefault(_sidebarjs);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -280,7 +280,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     var instances = {};
     return {
       init: function init(options) {
-        instances[options.component.getAttribute('sidebarjs')] = new _sidebarjs.SidebarJS(options);
+        instances[options.component.getAttribute('sidebarjs')] = new _sidebarjs2.default(options);
       },
       open: function open() {
         var sidebarName = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
@@ -308,7 +308,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         instances[sidebarName] && instances[sidebarName].setPosition(position);
       },
 
-      elemHasListener: _sidebarjs.SidebarJS.elemHasListener
+      elemHasListener: _sidebarjs2.default.elemHasListener
     };
   }
 
