@@ -6,7 +6,7 @@ const source = require('vinyl-source-stream');
 const buffer = require('vinyl-buffer');
 const ngAnnotate = require('gulp-ng-annotate');
 const babelify = require('babelify');
-const minifyCSS = require('gulp-minify-css');
+const cleanCSS = require('gulp-clean-css');
 const sass = require('gulp-sass');
 const importCss = require('gulp-import-css');
 
@@ -32,7 +32,7 @@ gulp.task('styles', () =>
   .pipe(importCss())
   .pipe(gulp.dest('./dist'))
   .pipe(rename({extname: '.min.css'}))
-  .pipe(minifyCSS())
+  .pipe(cleanCSS())
   .pipe(gulp.dest('./dist')));
 
 
