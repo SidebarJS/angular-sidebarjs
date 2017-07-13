@@ -1,5 +1,5 @@
 # Angular SidebarJS
-Create mobile sidebar/sidenav experiance in angular.
+Create mobile sidebar/sidenav experiance in AngularJS.
 
 ```ssh
 npm install angular-sidebarjs --save
