@@ -1,5 +1,6 @@
-# Angular SidebarJS
+# Angular SidebarJS (AngularJS v1.x)
 Create mobile sidebar/sidenav experiance in AngularJS.
+> Are you looking for a version with Angular? Try [ng-sidebarjs](https://github.com/SidebarJS/ng-sidebarjs)
 
 ```ssh
 npm install angular-sidebarjs --save
