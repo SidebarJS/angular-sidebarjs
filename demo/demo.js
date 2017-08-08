@@ -27,12 +27,12 @@ function AppCtrl(SidebarJS) {
 }
 
 angular
-.module('Demo', ['ngSidebarJS'])
-.config(['$compileProvider', function ($compileProvider) {
-  $compileProvider.debugInfoEnabled(false);
-}])
-.component('app', {
-  controller: ['SidebarJS', AppCtrl],
-  controllerAs: 'app',
-  templateUrl: './app.template.html',
-});
+  .module('Demo', ['ngSidebarJS'])
+  .config(['$compileProvider', function ($compileProvider) {
+    $compileProvider.debugInfoEnabled(false);
+  }])
+  .component('app', {
+    controller: ['SidebarJS', AppCtrl],
+    controllerAs: 'app',
+    templateUrl: './app.template.html',
+  });
