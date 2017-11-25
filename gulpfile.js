@@ -13,27 +13,27 @@ const importCss = require('gulp-import-css');
 
 gulp.task('scripts', () =>
   browserify('./src/angular-sidebarjs.js')
-  .transform(babelify, {
-    presets: ['es2015'],
-  })
-  .bundle()
-  .on('error', console.error.bind(console))
-  .pipe(source('angular-sidebarjs.js'))
-  .pipe(buffer())
-  .pipe(ngAnnotate())
-  .pipe(gulp.dest('./dist'))
-  .pipe(rename({extname: '.min.js'}))
-  .pipe(uglify())
-  .pipe(gulp.dest('./dist')));
+    .transform(babelify, {
+      presets: ['es2015'],
+    })
+    .bundle()
+    .on('error', console.error.bind(console))
+    .pipe(source('angular-sidebarjs.js'))
+    .pipe(buffer())
+    .pipe(ngAnnotate())
+    .pipe(gulp.dest('./dist'))
+    .pipe(rename({extname: '.min.js'}))
+    .pipe(uglify())
+    .pipe(gulp.dest('./dist')));
 
 gulp.task('styles', () =>
   gulp.src('./src/*.scss')
-  .pipe(sass().on('error', sass.logError))
-  .pipe(importCss())
-  .pipe(gulp.dest('./dist'))
-  .pipe(rename({extname: '.min.css'}))
-  .pipe(cleanCSS())
-  .pipe(gulp.dest('./dist')));
+    .pipe(sass().on('error', sass.logError))
+    .pipe(importCss())
+    .pipe(gulp.dest('./dist'))
+    .pipe(rename({extname: '.min.css'}))
+    .pipe(cleanCSS())
+    .pipe(gulp.dest('./dist')));
 
 
 gulp.task('watch', () => {
