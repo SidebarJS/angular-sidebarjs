@@ -45,10 +45,10 @@ class SidebarJSCtrl {
 function SidebarJSDirective(action) {
   return {
     /* @ngInject */
-    controller: function ctrl(SidebarJS) {
+    controller(SidebarJS) {
       this.SidebarJS = SidebarJS;
     },
-    link: function link(scope, elem, attrs, ctrl) {
+    link(scope, elem, attrs, ctrl) {
       if (!ctrl.SidebarJS.elemHasListener(elem[0])) {
         const sidebarName = attrs[`sidebarjs${action.charAt(0).toUpperCase() + action.slice(1)}`];
         elem[0].addEventListener('click', () => ctrl.SidebarJS[action](sidebarName));
