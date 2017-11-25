@@ -15,6 +15,7 @@ gulp.task('scripts', () =>
   browserify('./src/angular-sidebarjs.js')
     .transform(babelify, {
       presets: ['es2015'],
+      plugins: ['transform-object-rest-spread'],
     })
     .bundle()
     .on('error', console.error.bind(console))

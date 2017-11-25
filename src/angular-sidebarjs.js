@@ -16,13 +16,16 @@ class SidebarJSCtrl {
   $postLink() {
     const container = this.elem.children[0];
     const background = this.elem.children[1];
-    const options = Object.assign({}, this.sidebarjsConfig, {
-      component: this.elem,
-      container,
-      background,
-    });
-    this.SidebarJS.create(options);
+    const config = {...this.sidebarjsConfig, component: this.elem, container, background};
+    this.SidebarJS.create(config);
+    this.addTransitionListener(container);
+  }
 
+  $onDestroy() {
+    this.SidebarJS.destroy(this.sidebarjsName);
+  }
+
+  addTransitionListener(container) {
     let wasVisible = false;
     container.addEventListener('transitionend', () => {
       const isVisible = this.SidebarJS.isVisible(this.sidebarjsName);
@@ -35,10 +38,6 @@ class SidebarJSCtrl {
       }
       this.$scope.$applyAsync();
     }, false);
-  }
-
-  $onDestroy() {
-    this.SidebarJS.destroy(this.sidebarjsName);
   }
 }
 
