@@ -5,13 +5,18 @@
     "node": true,
     "amd": true
   },
+  "globals": {
+    "angular": true
+  },
   "rules": {
+    "object-curly-newline": 0,
     "no-param-reassign": 0,
     "no-return-assign": 0,
     "no-plusplus": 0,
     "no-unused-expressions": 0,
     "max-len": 0,
     "object-curly-spacing": 0,
-    "no-underscore-dangle": 0
+    "no-underscore-dangle": 0,
+    "prefer-destructuring": 0
   }
 }
