@@ -1,4 +1,6 @@
+/* eslint import/no-unresolved: 0 */
 import {SidebarService} from 'sidebarjs';
+import '~core/sidebarjs.css';
 
 class SidebarJSCtrl {
   /* @ngInject */
