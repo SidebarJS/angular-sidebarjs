@@ -4,7 +4,7 @@
   "description": "Create mobile sidebar/sidenav experiance in angularjs",
   "main": "index.js",
   "scripts": {
-    "server": "live-server --open=demo",
+    "server": "live-server --quiet --open=demo --wait=1000",
     "start": "npm run dev",
     "dev": "webpack -w & npm run server",
     "prod": "webpack"
@@ -42,6 +42,7 @@
     "ng-annotate-loader": "^0.6.1",
     "optimize-css-assets-webpack-plugin": "^3.2.0",
     "style-loader": "^0.19.1",
+    "uglifyjs-webpack-plugin": "^1.1.6",
     "webpack": "^3.10.0"
   },
   "dependencies": {

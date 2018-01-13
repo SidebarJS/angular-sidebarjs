@@ -1,5 +1,5 @@
 const path = require('path');
-const webpack = require('webpack');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
@@ -38,13 +38,7 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin(['dist'], {verbose: false}),
     new ExtractTextPlugin('[name].css', {allChunks: true}),
-    new webpack.optimize.UglifyJsPlugin({
-      include: /\.min\.js$/,
-      minimize: true,
-      compress: {warnings: false},
-    }),
-    new OptimizeCssAssetsPlugin({
-      assetNameRegExp: /\.min\.css$/,
-    }),
+    new UglifyJsPlugin({include: /\.min\.js$/}),
+    new OptimizeCssAssetsPlugin({assetNameRegExp: /\.min\.css$/}),
   ],
 };
