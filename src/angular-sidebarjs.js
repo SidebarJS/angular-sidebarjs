@@ -15,8 +15,8 @@ class SidebarJSCtrl {
 
   $postLink() {
     const container = this.elem.children[0];
-    const background = this.elem.children[1];
-    const config = {...this.sidebarjsConfig, component: this.elem, container, background};
+    const backdrop = this.elem.children[1];
+    const config = {...this.sidebarjsConfig, component: this.elem, container, backdrop};
     this.SidebarJS.create(config);
     this.addTransitionListener(container);
   }
@@ -61,7 +61,7 @@ angular
   .module('ngSidebarJS', [])
   .service('SidebarJS', SidebarService)
   .component('sidebarjs', {
-    template: '<div sidebarjs-container ng-transclude></div><div sidebarjs-background></div>',
+    template: '<div sidebarjs-container ng-transclude></div><div sidebarjs-backdrop></div>',
     transclude: true,
     controller: SidebarJSCtrl,
     bindings: {
