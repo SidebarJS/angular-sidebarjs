@@ -1,6 +1,6 @@
 {
   "name": "angular-sidebarjs",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "Create mobile sidebar/sidenav experiance in angularjs",
   "main": "index.js",
   "scripts": {
