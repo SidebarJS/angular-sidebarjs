@@ -6,7 +6,8 @@
 
 <sidebarjs
   on-close="app.onSidebarClose()"
-  on-open="app.onSidebarOpen()">
+  on-open="app.onSidebarOpen()"
+  on-change-visibility="app.onSidebarChangeVisibility($event)">
   <h3>Angular SidebarJS</h3>
   <nav>
     <div>
@@ -25,7 +26,8 @@
   sidebarjs-name="mySecondSidebarJS"
   sidebarjs-config="{position: 'right'}"
   on-close="app.onSidebarClose()"
-  on-open="app.onSidebarOpen()">
+  on-open="app.onSidebarOpen()"
+  on-change-visibility="app.onSidebarChangeVisibility($event)">
   <h3>My Second SidebarJS</h3>
   <nav>
     <div>
@@ -43,8 +45,8 @@
 <main>
   <section>
     <h2>IsVisible</h2>
-    <p>Left is open: {{app.sidebarIsVisible()}}</p>
-    <p>Right is open: {{app.sidebarIsVisible("mySecondSidebarJS")}}</p>
+    <p>Left is open: {{app.isVisibleSidebarJS()}}</p>
+    <p>Right is open: {{app.isVisibleSidebarJS("mySecondSidebarJS")}}</p>
   </section>
 
   <div class="app__js-toggle-buttons">

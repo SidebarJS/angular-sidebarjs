@@ -16,30 +16,27 @@ class SidebarJSCtrl {
   }
 
   $postLink() {
-    const container = this.elem.children[0];
-    const backdrop = this.elem.children[1];
-    const config = {...this.sidebarjsConfig, component: this.elem, container, backdrop};
+    const userConfig = this.sidebarjsConfig || {};
+    const onChangeVisibility = this.onChangeVisibility || userConfig.onChangeVisibility;
+    const config = {
+      ...userConfig,
+      component: this.elem,
+      container: this.elem.children[0],
+      backdrop: this.elem.children[1],
+      onOpen: this.onOpen || userConfig.onOpen,
+      onClose: this.onClose || userConfig.onClose,
+      onChangeVisibility: (changes) => {
+        if (onChangeVisibility) {
+          onChangeVisibility({$event: changes});
+        }
+        this.$scope.$applyAsync();
+      },
+    };
     this.SidebarJS.create(config);
-    this.addTransitionListener(container);
   }
 
   $onDestroy() {
     this.SidebarJS.destroy(this.sidebarjsName);
-  }
-
-  addTransitionListener(container) {
-    let wasVisible = false;
-    container.addEventListener('transitionend', () => {
-      const isVisible = this.SidebarJS.isVisible(this.sidebarjsName);
-      if (this.onOpen && isVisible && !wasVisible) {
-        wasVisible = true;
-        this.onOpen();
-      } else if (this.onClose && !isVisible && wasVisible) {
-        wasVisible = false;
-        this.onClose();
-      }
-      this.$scope.$applyAsync();
-    }, false);
   }
 }
 
@@ -69,6 +66,7 @@ angular
     bindings: {
       onOpen: '&?',
       onClose: '&?',
+      onChangeVisibility: '&?',
       sidebarjsConfig: '<?',
       sidebarjsName: '@?',
     },
