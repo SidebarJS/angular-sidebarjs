@@ -27,6 +27,39 @@ ES6
 import ngSidebarJS from 'angular-sidebarjs';
 ```
 
+## Options
+```html
+<sidebarjs
+  // Optional | required only for multiple sidebarjs
+  sidebarjs-name="mainSidebarJS"
+  
+  // Optional
+  sidebarjs-config="{
+      // Minimum swipe in px required to trigger listener: open
+      documentMinSwipeX?: 10,
+      // Range in px where document is listening for gesture: open
+      documentSwipeRange?: 40,
+      // Open and close sidebar with swipe gestures
+      nativeSwipe?: true,
+      // Enable/Disable open on swipe
+      nativeSwipeOpen?: true,
+      // Sidebar position, accepted values: left|right
+      position?: 'left',
+      // Backdrop opacity on sidebar open
+      backdropOpacity?: 0.3,
+  }"
+  
+  // Optional | Function called after sidebar is open
+  on-close="app.onSidebarClose()"
+  
+  // Optional | Function called after sidebar is close
+  on-open="app.onSidebarOpen()"
+  
+  // Optional | Function called when sidebar change visibility
+  on-change-visibility="app.onSidebarChangeVisibility($event)">
+</sidebarjs>
+```
+
 ## Implementation
 ### Download files
 Download and save all files
