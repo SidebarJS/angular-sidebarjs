@@ -30,7 +30,7 @@ import ngSidebarJS from 'angular-sidebarjs';
 ## Options
 ```html
 <sidebarjs
-  // Optional | required only for multiple sidebarjs
+  // Optional | Required only for multiple sidebarjs
   sidebarjs-name="mainSidebarJS"
   
   // Optional
@@ -50,13 +50,13 @@ import ngSidebarJS from 'angular-sidebarjs';
   }"
   
   // Optional | Function called after sidebar is open
-  on-close="app.onSidebarClose()"
+  on-close="$ctrl.onSidebarClose()"
   
   // Optional | Function called after sidebar is close
-  on-open="app.onSidebarOpen()"
+  on-open="$ctrl.onSidebarOpen()"
   
   // Optional | Function called when sidebar change visibility
-  on-change-visibility="app.onSidebarChangeVisibility($event)">
+  on-change-visibility="$ctrl.onSidebarChangeVisibility($event)">
 </sidebarjs>
 ```
 
